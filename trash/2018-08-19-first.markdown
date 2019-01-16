@@ -1,0 +1,46 @@
+---
+title: 포스트3
+date: 2018-04-28 23:11 +0900
+tags:
+- ES6
+- javascript
+---
+
+> blockquote 첫줄
+
+## Test
+
+## Header 2 (H1 is reserved for post titles) ##
+### Header 3
+#### Header 4
+[asdf](http://github.com/barryclark/jekyll-now/)
+
+* A bulletted list
+- alternative syntax 1
++ alternative syntax 2
+  - an indented list item
+
+- **bold**
+- `#include <iostream>`
+
+{% highlight ruby %}
+#include <iostream>
+
+cout << "hellow world";
+def adsf
+end
+{% endhighlight %}
+
+
+~~~ ruby
+def test
+end
+~~~
+
+~~~ c++
+#include <iostream>
+int main(){
+  int a;
+  printf("%d\n", a);
+}
+~~~

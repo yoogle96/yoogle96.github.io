@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<search>
+  
+    <entry>
+      <title><![CDATA[DataStructure]스택(Stack) 이해하기]]></title>
+      <url>/datastructure/2018/10/25/Stack/</url>
+      <content type="text"><![CDATA[스택은 나중에 들어간 것이 먼저 나오는 구조이며 후입선출,LIFO(Last-In, First-Out)이라 표현한다.예를들면 새로운 접시를 차곡히 쌓아올리고(Push) 접시를 사용할때 위에서부터 하나씩 꺼내 사용(Pop)하는 구조와 같다.스택의 정의  삽입 Push() : 스택에 데이터를 쌓는다.  삭제 Pop() : 쌓여있는 데이터를 출력하고 삭제한다.  빈공간 Empty() : 스택이 비어있으면 참을 반환하고 그렇지 않으면 거짓을 반환한다.  topIndex : 현재의 위치를 저장할 변수배열을 활용한 스택ArrayStack.hpp#ifndef ArrayStack_hpp#define ArrayStack_hpp#define STACK_LEN 100#define TRUE 1#define FALSE 0typedef int Data;#include &lt;iostream&gt;using namespace std;typedef struct _arrayStack{    Data stackArr[STACK_LEN];    int topIndex;}ArrayStack;typedef ArrayStack Stack;void StackInit(Stack * pstack);int SIsEmpty(Stack * pstack);void SPush(Stack * pstack, Data data);Data SPop(Stack * pstack);void SPeek(Stack * pstack);#endif /* ArrayStack_hpp */ArrayStack.cpp#include "ArrayStack.hpp"void StackInit(Stack * pstack){    pstack -&gt; topIndex = -1;}int SIsEmpty(Stack * pstack){    if(pstack -&gt; topIndex == -1){        return TRUE;    }        return FALSE;}void SPush(Stack * pstack, Data data){    pstack -&gt; topIndex++;    pstack -&gt; stackArr[pstack -&gt; topIndex] = data;}Data SPop(Stack * pstack){    Data rData = pstack -&gt; stackArr[pstack -&gt; topIndex];    if(SIsEmpty(pstack)){        cout &lt;&lt; "데이터가 없습니다." &lt;&lt; endl;        exit(-1);    }    pstack -&gt; topIndex--;    return rData;}void SPeek(Stack * pstack){    if(SIsEmpty(pstack)){        cout &lt;&lt; "데이터가 없습니다." &lt;&lt; endl;        exit(-1);    }    cout &lt;&lt; pstack -&gt; stackArr[pstack -&gt; topIndex] &lt;&lt; endl;}ArrayStackMain.cpp#include "ArrayStack.hpp"int main(int argc, const char * argv[]) {    Stack stack;    StackInit(&amp;stack);    SPush(&amp;stack, 10);    SPush(&amp;stack, 20);    SPush(&amp;stack, 30);    SPush(&amp;stack, 40);    SPush(&amp;stack, 50);    while(!SIsEmpty(&amp;stack)){        cout &lt;&lt; SPop(&amp;stack) &lt;&lt; endl;    }    return 0;}실행결과50 40 30 20 10연결리스트를 활용한 스택LListStack.hpp#ifndef LListStack_hpp#define LListStack_hpp#define TRUE 1#define FALSE 0typedef int Data;#include &lt;iostream&gt;using namespace std;typedef struct _node{    Data data;    struct _node * next;}Node;typedef struct _listStack{    Node * head;}ListStack;typedef ListStack Stack;void StackInit(Stack * pstack);int SIsEmpty(Stack * pstack);void SPush(Stack * pstack, Data data);Data SPop(Stack * pstack);void SPeek(Stack * pstack);#endif /* LListStack_hpp */LListStack.cpp#include "LListStack.hpp"void StackInit(Stack * pstack){    pstack -&gt; head = NULL;}int SIsEmpty(Stack * pstack){    if(pstack -&gt; head == NULL)        return TRUE;    return FALSE;}void SPush(Stack * pstack, Data data){    Node * newNode = new Node;    newNode -&gt; data = data;    newNode -&gt; next = pstack -&gt; head;    pstack -&gt; head = newNode;}Data SPop(Stack * pstack){    if(SIsEmpty(pstack)){        exit(-1);    }    Data rData = pstack -&gt; head -&gt; data;    Node * rNode = pstack -&gt; head;    pstack -&gt; head = pstack -&gt; head -&gt; next;    delete rNode;    return rData;}void SPeek(Stack * pstack);LListStackMain.cpp#include "LListStack.hpp"int main(int argc, const char * argv[]) {    Stack stack;    StackInit(&amp;stack);    SPush(&amp;stack, 10);    SPush(&amp;stack, 20);    SPush(&amp;stack, 30);    SPush(&amp;stack, 40);    SPush(&amp;stack, 50);    while(!SIsEmpty(&amp;stack)){        cout &lt;&lt; SPop(&amp;stack) &lt;&lt; endl;    }    return 0;}실행결과50 40 30 20 10]]></content>
+      <categories>
+        
+          <category> DataStructure </category>
+        
+      </categories>
+      <tags>
+        
+          <tag> C++ </tag>
+        
+          <tag> Stack </tag>
+        
+      </tags>
+      <tags></tags>
+    </entry>
+  
+    <entry>
+      <title><![CDATA[Ruby On Rails] Daum 지도 API 활용하기]]></title>
+      <url>/ruby%20on%20rails/2018/09/14/rails_daum_api/</url>
+      <content type="text"><![CDATA[다음 지도 API를 이용해 키워드를 검색하여 위치를 표시하고 선택하여 D/B에 위도와 경도를 저장해 선택한 위치를 불러온다.다음 지도 API Key 불러오기  API Key 받기다음 지도를 이용하려면 우선 카카오개발자사이트에 로그인하여 API Key를 지급받아야한다.– 로그인을 한 후 내 애플리케이션으로 이동한다– 내 애플리케이션으로 이동후 앱 만들기를 클릭해 다음과 같이 자신의 애플리케이션을 생선한다– 플랫폼을 웹으로 설정한 후 개발 환경의 도메인을 입력후 저장한다.– JavaScript키를 메모해둔다지도 생성하기  키워드 검색이 가능한 다음 지도 불러오기다음 지도 API  검색 결과를 클릭하여 좌표 받아오기    (function(marker, title) {          daum.maps.event.addListener(marker, 'mouseover', function() {              displayInfowindow(marker, title);          });          daum.maps.event.addListener(marker, 'mouseout', function() {              infowindow.close();          });          itemEl.onmouseover =  function () {              displayInfowindow(marker, title);          };          itemEl.onmouseout =  function () {              infowindow.close();          };      })(marker, places[i].place_name);        이 부분을    (function(marker, title) {        daum.maps.event.addListener(marker, 'click', function(mouseEvent) {            displayInfowindow(marker, title);            var latlng = marker.getPosition();            var message = '클릭한 위치의 위도는 ' + latlng.getLat() + ' 이고, ';            message += '경도는 ' + latlng.getLng() + ' 입니다';            var resultDiv = document.getElementById('clickLatlng');            resultDiv.innerHTML = message;            var resultLat = document.getElementById('Lat');            var resultLng = document.getElementById('Lng');            resultLat.value = latlng.getLat();            resultLng.value = latlng.getLng();        });        // daum.maps.event.addListener(marker, 'mouseout', function() {        //     infowindow.close();        // });        itemEl.onclick =  function () {            displayInfowindow(marker, title);            var latlng = marker.getPosition();            var message = '클릭한 위치의 위도는 ' + latlng.getLat() + ' 이고, ';            message += '경도는 ' + latlng.getLng() + ' 입니다';            var resultDiv = document.getElementById('clickLatlng');            resultDiv.innerHTML = message;            var resultLat = document.getElementById('Lat');            var resultLng = document.getElementById('Lng');            resultLat.value = latlng.getLat();            resultLng.value = latlng.getLng();        };        // itemEl.onmouseout =  function () {        //     infowindow.close();        // };    })(marker, places[i].place_name);        이렇게 수정한다.또한 HTML body부분도 수정해주어야한다.  &lt;div id="clickLatlng"&gt;&lt;/div&gt;&lt;input type="text" id="Lat"&gt;&lt;input type="text" id="Lng"&gt;이 부분을 추가하여 결과 값들이 보일수 있도록 한다.이와 같이 마커나 목록을 클릭했을시 해당 위치의 좌표 값을 받아올수 있다.이제 이 값을 hidden태그로 D/B에 저장하여 필요할때 좌표를 불러와 해당 지역을 표시할 수 있다.지도 불러오기# maps#showdef show  @map = Map.find params[:id]endShow 컨트롤러를 작성하고 Show.html.erb를 생성한다.show.html.erb&lt;!DOCTYPE html&gt;&lt;html&gt;&lt;head&gt;    &lt;meta charset="utf-8"&gt;    &lt;title&gt;마커 생성하기&lt;/title&gt;&lt;/head&gt;&lt;body&gt;&lt;div id="map" style="width:100%;height:350px;"&gt;&lt;/div&gt;&lt;script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey= !!!! 자신의 API Key를 넣어주세요 !!!!"&gt;&lt;/script&gt;&lt;script&gt;var mapContainer = document.getElementById('map'), // 지도를 표시할 div    mapOption = {        center: new daum.maps.LatLng(&lt;%= @map.lat %&gt;, &lt;%= @map.lng %&gt;), // 지도의 중심좌표        level: 3 // 지도의 확대 레벨    };var map = new daum.maps.Map(mapContainer, mapOption); // 지도를 생성합니다// 마커가 표시될 위치입니다var markerPosition  = new daum.maps.LatLng(&lt;%= @map.lat %&gt;, &lt;%= @map.lng %&gt;);// 마커를 생성합니다var marker = new daum.maps.Marker({    position: markerPosition});// 마커가 지도 위에 표시되도록 설정합니다marker.setMap(map);// 아래 코드는 지도 위의 마커를 제거하는 코드입니다// marker.setMap(null);&lt;/script&gt;&lt;/body&gt;&lt;/html&gt;여기서도 마찬가지로 자신의 API Key를 입력후 인자로 D/B에 저장돼어있는 lat값과 lng값을 넘겨줘서 지정한 위치의 마커를 생성한다.]]></content>
+      <categories>
+        
+          <category> Ruby On Rails </category>
+        
+      </categories>
+      <tags>
+        
+          <tag> Ruby </tag>
+        
+          <tag> Daum지도 </tag>
+        
+      </tags>
+      <tags></tags>
+    </entry>
+  
+</search>
